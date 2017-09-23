@@ -1,0 +1,48 @@
+
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/paper-styles/color.html">
+<link rel="import" href="../bower_components/paper-styles/typography.html">
+<link rel="import" href="../bower_components/paper-toolbar/paper-toolbar.html">
+<link rel="import" href="../bower_components/paper-toolbar/paper-toolbar.html">
+<link rel="import" href="../bower_components/google-map/google-map.html">
+
+<dom-module id="user-page">
+  <template>
+    <style>
+      :host {
+        display: block;
+        @apply(--paper-font-common-base);
+      }
+      :host .secret {
+      	@apply(--paper-font-display4);
+      	background:var(--paper-green-600);
+      	color:white;
+      }
+    </style>
+    <paper-toolbar>
+    	<paper-icon-button icon="menu"></paper-icon-button>
+    	<div class="title">Where you are going</div>
+    	<paper-icon-button icon="more-vert"></paper-icon-button>
+    </paper-toolbar>
+    
+    <google-map api-key="AIzaSyBQ-A3XwmrhTU2mvK7XXaflOiOEkBf7Rd0"></google-map>
+    
+  </template>
+</dom-module>
+
+<script>
+  Polymer({
+    is: 'user-page',
+
+    behaviors: [
+    ],
+    
+    properties:{
+    },
+    
+    attached:function(){
+    	console.log("the user-page is attached!");	
+    }
+  });
+</script>
