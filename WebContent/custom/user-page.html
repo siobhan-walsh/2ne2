@@ -6,6 +6,7 @@
 <link rel="import" href="../bower_components/paper-toolbar/paper-toolbar.html">
 <link rel="import" href="../bower_components/paper-toolbar/paper-toolbar.html">
 <link rel="import" href="../bower_components/google-map/google-map.html">
+<link rel="import" href="../bower_components/google-apis/google-maps-api.html">
 
 <dom-module id="user-page">
   <template>
@@ -25,9 +26,9 @@
     	<div class="title">Where you are going</div>
     	<paper-icon-button icon="more-vert"></paper-icon-button>
     </paper-toolbar>
-    
-    <google-map api-key="AIzaSyBQ-A3XwmrhTU2mvK7XXaflOiOEkBf7Rd0"></google-map>
-    
+    <google-map fit-to-marker api-key="AIzaSyBQ-A3XwmrhTU2mvK7XXaflOiOEkBf7Rd0">
+  		<google-map-marker latitude="37.78" longitude="-122.4" draggable="true"></google-map-marker>
+	</google-map>
   </template>
 </dom-module>
 
