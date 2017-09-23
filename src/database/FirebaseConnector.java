@@ -19,7 +19,6 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
-import directions.User;
 
 public class FirebaseConnector {
 	private static final String FIREBASE_URL = "https://newhere-da83c.firebaseio.com/";
@@ -44,8 +43,8 @@ public class FirebaseConnector {
 	}
 	
 	//Returns whether put was successful or not
-	public boolean putData(String tableName, String jsonData) {
-		String url = FIREBASE_URL + tableName + REST_EXT + authenticationToken();
+	public boolean putData(String tableName, String key, String jsonData) {
+		String url = FIREBASE_URL + tableName + "/" + key + REST_EXT + authenticationToken();
 		HttpPut putRequest = new HttpPut(url);
 		StringEntity entity;
 		try {
@@ -111,8 +110,8 @@ public class FirebaseConnector {
 		return false;
 	}
 	
-	public String getData(String tableName, String key) {
-		String url = FIREBASE_URL + tableName + "/" + key + REST_EXT + authenticationToken();
+	public String getData(String tableName, String key, String query) {
+		String url = FIREBASE_URL + tableName + "/" + key + REST_EXT + authenticationToken() + query;
 		HttpGet getRequest = new HttpGet(url);
 		try {
 			StatusAndResponse sReponse = this.makeRequest(getRequest);
@@ -164,11 +163,6 @@ public class FirebaseConnector {
 	}
 	
 	public static void main(String[] args) throws IOException {
-		User newUser = new User();
-		newUser.setName("Bob");
-		newUser.setNeedRide(true);
-		FirebaseConnector fbc = new FirebaseConnector();
-		fbc.putData("users", newUser.toJson());
 	}
 	
 	
