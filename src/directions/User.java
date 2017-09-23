@@ -1,27 +1,13 @@
 package directions;
 
+import com.google.gson.Gson;
+
 public class User {
+	private static Gson gson = new Gson();
 	
-	private String name;
 	private String email;
-	private String admin;
-	private String addressTo;
-	private String addressFrom;
-	private String departureName;
-	private String transportation;
-	private boolean needRide;
-	
-	public User() {
-		
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
+	private String password;
+	private String name; //Optional
 
 	public String getEmail() {
 		return email;
@@ -31,52 +17,28 @@ public class User {
 		this.email = email;
 	}
 
-	public String getAdmin() {
-		return admin;
+	public String getPassword() {
+		return password;
 	}
 
-	public void setAdmin(String admin) {
-		this.admin = admin;
+	public void setPassword(String password) {
+		this.password = password;
 	}
 
-	public String getAddressTo() {
-		return addressTo;
+	public String getName() {
+		return name;
 	}
 
-	public void setAddressTo(String addressTo) {
-		this.addressTo = addressTo;
+	public void setName(String name) {
+		this.name = name;
 	}
-
-	public String getAddressFrom() {
-		return addressFrom;
+	
+	public String toJson() {
+		return gson.toJson(this);
 	}
-
-	public void setAddressFrom(String addressFrom) {
-		this.addressFrom = addressFrom;
-	}
-
-	public String getDepartureName() {
-		return departureName;
-	}
-
-	public void setDepartureName(String departureName) {
-		this.departureName = departureName;
-	}
-
-	public String getTransportation() {
-		return transportation;
-	}
-
-	public void setTransportation(String transportation) {
-		this.transportation = transportation;
-	}
-
-	public boolean getNeedRide() {
-		return needRide;
-	}
-
-	public void setNeedRide(boolean b) {
-		this.needRide = b;
+	
+	public static User fromJson(String json) {
+		return gson.fromJson(json, User.class);
 	}
 
 }

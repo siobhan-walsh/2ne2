@@ -1,0 +1,48 @@
+
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/paper-styles/color.html">
+<link rel="import" href="../bower_components/paper-styles/typography.html">
+
+<dom-module id="super-element">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+      :host .secret {
+      	@apply(--paper-font-display4);
+      	background:var(--paper-green-600);
+      	color:white;
+      }
+    </style>
+
+    <div class="secret" hidden="[[!admin]]">secret stuff</div>
+    
+    <paper-button on-tap="toggleAdmin">Show admin</paper-button>
+  </template>
+</dom-module>
+
+<script>
+  Polymer({
+    is: 'super-element',
+
+    behaviors: [
+    ],
+    
+    properties:{
+    	admin:{
+    		type:Boolean,
+    		value:false
+    	}
+    },
+    
+    attached:function(){
+    	console.log("the super element is attached!");	
+    },
+    
+    toggleAdmin:function(){
+    	this.admin = !this.admin;
+    }
+  });
+</script>

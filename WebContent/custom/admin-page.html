@@ -1,0 +1,67 @@
+
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/paper-styles/color.html">
+<link rel="import" href="../bower_components/paper-styles/typography.html">
+<link rel="import" href="../bower_components/paper-toolbar/paper-toolbar.html">
+
+<dom-module id="admin-page">
+  <template>
+    <style>
+      :host {
+        @apply(--paper-font-common-base);
+      }
+    </style>
+    <paper-toolbar>
+    	<paper-icon-button icon="menu"></paper-icon-button>
+    	<div class="title">Guest list</div>
+    	<paper-icon-button icon="more-vert"></paper-icon-button>
+    </paper-toolbar>
+    
+    <div>
+    	Your event <span>Michelle's Dream Wedding</span> is starting in 2 days and 3 hours
+    </div>
+    
+    <template is="dom-repeat" items="[[testItems]]">
+    	<div>Name: [[item.name]]</div>
+    	<div>Method: [[item.method]]</div>
+    </template>
+    
+  </template>
+</dom-module>
+
+<script>
+  Polymer({
+    is: 'admin-page',
+
+    behaviors: [
+    ],
+    
+    properties:{
+    	admin:{
+    		type:Boolean,
+    		value:false
+    	},
+    	testItems:{
+    		type:Array,
+    		value:[
+    			{"name":"judy",
+    			"method":"evo"
+    			},
+    			{
+    				"name":"bob",
+    				"method":"bus"
+    			}
+    		]
+    	}
+    },
+    
+    attached:function(){
+    	console.log("the admin-page is attached!");	
+    },
+    
+    toggleAdmin:function(){
+    	this.admin = !this.admin;
+    }
+  });
+</script>
