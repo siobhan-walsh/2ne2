@@ -1,5 +1,7 @@
 package directions;
 
+import com.google.gson.Gson;
+
 public class User {
 	
 	private String name;
@@ -10,6 +12,8 @@ public class User {
 	private String departureName;
 	private String transportation;
 	private boolean needRide;
+	
+	private static Gson gson = new Gson();
 	
 	public User() {
 		
@@ -79,4 +83,8 @@ public class User {
 		this.needRide = b;
 	}
 
+	public String toJson() {
+		return gson.toJson(this);
+	}
+	
 }
