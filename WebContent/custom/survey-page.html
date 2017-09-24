@@ -85,7 +85,7 @@
       }
       
       :host .box {
-      	min-width:32px;
+      	min-width:42px;
       }
       
       :host .bottom-border {
@@ -125,6 +125,10 @@
 		  #page1, #page2, #page3, #page4 {
 		  opacity:0;
 		  }  
+		  
+		  .time {
+		  @apply(--paper-font-subhead);
+		  }
     </style>
     <paper-toolbar class="medium-tall">
     	<paper-icon-button icon="menu"></paper-icon-button>
@@ -153,26 +157,54 @@
     
     <div id="page2" class="content"> 
 	    <div class="header">
-	    	How will you be getting to Christine's party?
+	    	Suggested Routes
 	    </div>
-	    <paper-radio-group>
+	    <div>
+	    	<div class="row bottom-border">
+	    			<iron-icon class="big-icon" icon="custom-icons:evo"></iron-icon>
+	    		<div class="flex">
+	    			<div class="name lower-case">Evo</div>
+	    		</div>
+	    		<div class="box">
+	    			<div class="time">20 minutes</div>
+	    			<div class="address">$15</div>
+	    		</div>
+	    		<iron-icon icon="icons:chevron-right"></iron-icon>
+	    	</div>
+	    	
+	    	<div class="row bottom-border">
+	    			<iron-icon class="big-icon" icon="maps:directions-bus"></iron-icon>
+	    		<div class="flex">
+	    			<div class="name lower-case">Bus</div>
+	    		</div>
+	    		<div class="box">
+	    			<div class="time">44 minutes</di>
+	    			<div class="address">$2.75</div>
+	    		</div>
+	    		<iron-icon icon="icons:chevron-right"></iron-icon>
+	    	</div>
+	    	
+	    </div>
+	    
+	    <!--
+	    <paper-radio-group selected="{{radioSelected}}">
 		    <paper-radio-button name="car">Car</paper-radio-button>
 		    <paper-radio-button name="taxi">Taxi</paper-radio-button>
 		    <paper-radio-button name="bus">Bus</paper-radio-button>
 		    <paper-radio-button name="other">Other</paper-radio-button>
 		    <paper-radio-button name="none">I need help getting there!</paper-radio-button>
 	    </paper-radio-group>
-		
 		<paper-button raised on-tap="nextPage2">NEXT</paper-button>
+		  -->
     </div>
     
     <div id="page3" class="content"> 
 	    <div class="header">
 	    	Do you have room for other people?
 	    </div>
-	    <paper-radio-group>
-		    <paper-radio-button name="Yes">Yes</paper-radio-button>
-		    <paper-radio-button name="No">No</paper-radio-button>
+	    <paper-radio-group selected="{{radioSelected}}">
+		    <paper-radio-button name="yes">Yes</paper-radio-button>
+		    <paper-radio-button name="no">No</paper-radio-button>
 	    </paper-radio-group>
 	    <paper-button raised on-tap="nextPage">NEXT</paper-button>
 		
@@ -201,22 +233,16 @@
     ],
     
     properties:{
-    	funIcons:{
+    	palette:{
     		type:Array,
     		value:function(){
     			return [
-    				"image:audiotrack",
-    				"image:nature-people",
-    				"image:tag-faces",
-    				"social:sentiment-neutral",
-    				"social:sentiment-very-satisfied",
-    				"social:whatshot",
-    				"social:cake",
-    				"places:beach-access",
-    				"places:child-care",
-    				"places:ac-unit",
-    				"places:all-inclusive",
-    				"places:free-breakfast"
+    				"#9fa8da",
+    				"#00bcd4",
+    				"#f48fb1",
+    				"#ff9800",
+    				"#34515e",
+    				"#ba68c8"
     			];
     		}
     	},
@@ -265,7 +291,6 @@
     },
     
     nextPage:function(){
-    	if ()
     	this.$.page1.hidden = true;
     	this.$.page2.classList.add("slideIn");
     },
@@ -284,20 +309,13 @@
     	return iconMap[method];
     },
     
-    generateAviColour:function(){
-    	var num = Math.floor(Math.random() * (this.palette.length + 1)) - 1;
+    generateAviColour:function(palette){
+    	console.log("this.pat", palette);
+    	var num = Math.floor(Math.random() * (palette.length + 1)) - 1;
     	if(num < 0){
     		num = 0;
     	}
-    	return "background:" + this.palette[num] + ";";
-    },
-    
-    generateAviIcon:function(){
-    	var num = Math.floor(Math.random() * (this.funIcons.length + 1)) - 1;
-    	if(num < 0){
-    		num = 0;
-    	}
-    	return this.funIcons[num];
+    	return "background:" + palette[num] + ";";
     }
   });
 </script>
