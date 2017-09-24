@@ -49,6 +49,9 @@ public class UserController extends HttpServlet{
 		case "register":
 			User newUser = User.fromJson(request.getParameter("userData"));
 			boolean registerSuccess = saveUser(newUser);
+			EventUser registerEventUser = new EventUser();
+			registerEventUser.setEmail(newUser.getEmail());
+			String savedId_ = fbc.postData(EVENT_USER_TABLE, registerEventUser.toJson());
 			o.print(registerSuccess);
 			break;
 		case "inviteUser": 
@@ -128,7 +131,10 @@ public class UserController extends HttpServlet{
 	}
 
 	private static boolean saveUser(User newUser) {
-		return fbc.putData(USER_TABLE, newUser.getEmail().replace(".","_"), newUser.toJson());	
+		if (newUser != null && newUser.getEmail() != null && !newUser.getEmail().isEmpty()) {
+			return fbc.putData(USER_TABLE, newUser.getEmail().replace(".","_"), newUser.toJson());	
+		}
+		return false;
 	}
 
 	private static boolean checkUser(User user) {

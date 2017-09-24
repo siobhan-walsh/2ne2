@@ -246,13 +246,19 @@ public class GeoDirections {
 			try {
 				EventUser user = guests.get(i);
 				LatLng ll = user.getOriginCoordinate();
+				if (origin == null) {
+					origin = new LatLng(49.2506488,-123.054083);
+				}
+				if (ll == null) {
+					ll = new LatLng(49.3265176,-123.1418956);
+				}
 				DirectionsResult result = DirectionsApi.newRequest(context)
 						.origin(origin)
 						.destination(ll)
 				        .optimizeWaypoints(true)
 				        .mode(TravelMode.DRIVING)
 				        .await();
-				if (result.routes[0].legs[0].duration.inSeconds < 2400) //1200 = 20 minutes
+				if (result.routes[0].legs[0].duration.inSeconds < 1200) //1200 = 20 minutes
 				{
 					userswhohavefriends.add(user);
 				}

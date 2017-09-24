@@ -395,14 +395,9 @@
     		},
     		url: "/2NEWhere/UserController",
     		complete: function(resp) {
-    			if(resp.responseText == "true"){
+    			if(resp.responseText){
     				var userData = JSON.parse(resp.responseText)
-    		    	var keys = Object.keys(userData);
-    		    	var userList = [];
-    		    	for(var i = 0; i < keys.length; i++){
-    		    		userList.push(userData[keys[i]]);
-    		    	}
-    		    	this.set("nearbyUserList", userList);
+    		    	_this.set("nearbyUserList", userData);
     			}
     		},
     		dataType: "application/json"
