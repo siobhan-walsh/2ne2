@@ -1,0 +1,303 @@
+
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/paper-styles/color.html">
+<link rel="import" href="../bower_components/paper-styles/typography.html">
+<link rel="import" href="../bower_components/paper-toolbar/paper-toolbar.html">
+<link rel="import" href="../bower_components/paper-tabs/paper-tabs.html">
+<link rel="import" href="../bower_components/paper-tabs/paper-tab.html">
+<link rel="import" href="../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../bower_components/iron-icons/maps-icons.html">
+<link rel="import" href="../bower_components/iron-icons/social-icons.html">
+<link rel="import" href="../bower_components/iron-icons/notification-icons.html">
+<link rel="import" href="../bower_components/iron-icons/places-icons.html">
+<link rel="import" href="../bower_components/iron-icons/image-icons.html">
+<link rel="import" href="custom-icons.html">
+
+<dom-module id="survey-page">
+  <template>
+    <style>
+      :host {
+        @apply(--paper-font-common-base);
+      }
+      
+      :host paper-toolbar {
+      	--paper-toolbar-background:#33B200;
+      }
+      
+      :host .header {
+      	@apply(--paper-font-headline);
+      	color:var(--paper-blue-grey-400);
+      }
+      
+      :host .content {
+      	margin-top:16px;
+      }
+      
+      :host .emphasis {
+      	@apply(--paper-font-display2);
+      }
+      
+      :host .avi {
+      	width:32px;
+      	height:32px;
+      	border-radius:20%;
+      	background:var(--paper-light-blue-200);
+      }
+      
+      :host .avi {
+      	color:white;
+      }
+      
+      :host .row {
+      	@apply(--layout-horizontal);
+      	@apply(--layout-center);
+      }
+      
+      :host .row > * {
+      	padding:8px;
+      }
+      
+      :host .name {
+      	@apply(--paper-font-display1);
+      }
+      
+      :host .lower-case {
+      	text-transform:lowercase;
+      }
+      
+      :host .address, :host .method {
+      	@apply(--paper-font-caption);
+      }
+      
+      :host .method {
+      	text-align:center;
+      }
+      
+      :host .big-icon {
+      	--iron-icon-height: 32px;
+      	--iron-icon-width: 32px;
+      }
+      
+      :host .flex {
+      	@apply(--layout-flex);
+      }
+      
+      :host .box {
+      	min-width:32px;
+      }
+      
+      :host .bottom-border {
+      	border-bottom: 1px solid rgba(200, 200, 220, 0.6);
+      }
+      
+      /* Small only */
+      
+      @media screen and (max-width: 39.9375em) {
+	       .content {
+	      	margin:16px;
+	      }
+      }
+      
+		/* Medium and up */
+		@media screen and (min-width: 40em) {
+			.content {
+				max-width:60%;
+				margin:0px 20%;
+				background:light-blue;
+			}
+		}
+		
+		
+		/* Large and up */
+		@media screen and (min-width: 64em) {}
+		
+		.slideIn {
+		 animation: s 1s linear forwards;
+		}
+		
+		@keyframes s {
+			from {opacity: 0;}
+			to {opacity:1;}
+		}
+		    
+		  #page1, #page2, #page3, #page4 {
+		  opacity:0;
+		  }  
+    </style>
+    <paper-toolbar class="medium-tall">
+    	<paper-icon-button icon="menu"></paper-icon-button>
+    	<div class="title">Michelle's Dream Wedding</div>
+    	<div class="middle">
+	    	<paper-tabs selected="0">
+			  <paper-tab>All</paper-tab>
+			  <paper-tab>Unregistered</paper-tab>
+			  <paper-tab>Done</paper-tab>
+			</paper-tabs>
+    	</div>
+    </paper-toolbar>
+    
+     <div id="page1" class="content slideIn"> 
+	    <div class="header">
+	    	Where are you coming from?
+	    </div>
+	    <paper-input required name="address" always-float-label label="Address"></paper-input>
+	    <paper-input required name="city" always-float-label label="City"></paper-input>
+	    <paper-input required name="postalCode" always-float-label label="Postal Code"></paper-input>
+	    <paper-input required name="province" always-float-label label="Province"></paper-input>
+	    <paper-input required name="country" always-float-label label="Country"></paper-input>
+		
+		<paper-button raised on-tap="nextPage">NEXT</paper-button>
+    </div>
+    
+    <div id="page2" class="content"> 
+	    <div class="header">
+	    	How will you be getting to Christine's party?
+	    </div>
+	    <paper-radio-group>
+		    <paper-radio-button name="car">Car</paper-radio-button>
+		    <paper-radio-button name="taxi">Taxi</paper-radio-button>
+		    <paper-radio-button name="bus">Bus</paper-radio-button>
+		    <paper-radio-button name="other">Other</paper-radio-button>
+		    <paper-radio-button name="none">I need help getting there!</paper-radio-button>
+	    </paper-radio-group>
+		
+		<paper-button raised on-tap="nextPage2">NEXT</paper-button>
+    </div>
+    
+    <div id="page3" class="content"> 
+	    <div class="header">
+	    	Do you have room for other people?
+	    </div>
+	    <paper-radio-group>
+		    <paper-radio-button name="Yes">Yes</paper-radio-button>
+		    <paper-radio-button name="No">No</paper-radio-button>
+	    </paper-radio-group>
+	    <paper-button raised on-tap="nextPage">NEXT</paper-button>
+		
+    </div>
+    
+    <div id="page4" class="content"> 
+	    <div class="header">
+	    	Do you have room for other people?
+	    </div>
+	    <paper-radio-group>
+		    <paper-radio-button name="Yes">Yes</paper-radio-button>
+		    <paper-radio-button name="No">No</paper-radio-button>
+	    </paper-radio-group>
+	    <paper-button raised on-tap="nextPage">NEXT</paper-button>
+		
+    </div>
+    
+  </template>
+</dom-module>
+
+<script>
+  Polymer({
+    is: 'survey-page',
+
+    behaviors: [
+    ],
+    
+    properties:{
+    	funIcons:{
+    		type:Array,
+    		value:function(){
+    			return [
+    				"image:audiotrack",
+    				"image:nature-people",
+    				"image:tag-faces",
+    				"social:sentiment-neutral",
+    				"social:sentiment-very-satisfied",
+    				"social:whatshot",
+    				"social:cake",
+    				"places:beach-access",
+    				"places:child-care",
+    				"places:ac-unit",
+    				"places:all-inclusive",
+    				"places:free-breakfast"
+    			];
+    		}
+    	},
+    	pages:{
+    		type:Array,
+    		value:function(){
+    			return [
+    				"page1",
+    				"page2",
+    				"page3",
+    				"page4"
+    			];
+    		}
+    	},
+    	testItems:{
+    		type:Array,
+    		value:[
+    			{
+    				"name":"judy",
+    				"method":"evo",
+    				"from":"Lynn Valley, North Vancouver"
+    			},
+    			{
+    				"name":"bob",
+    				"method":"bus",
+    				"from":"Langley"
+    			},
+    			
+    			{
+    				"name":"Joey",
+    				"method":"",
+    				"from":""
+    			},
+    			
+    			{
+    				"name":"Luna",
+    				"method":"bike",
+    				"from":"East Van"
+    			}
+    		]
+    	}
+    },
+    
+    attached:function(){
+    	
+    },
+    
+    nextPage:function(){
+    	if ()
+    	this.$.page1.hidden = true;
+    	this.$.page2.classList.add("slideIn");
+    },
+    
+    nextPage2:function(){
+    	this.$.page2.hidden = true;
+    	this.$.page3.classList.add("slideIn");
+    },
+    
+    returnIcon:function(method){
+    	var iconMap = {
+    		"evo":"custom-icons:evo",
+    		"bus":"maps:directions-bus",
+    		"bike":"maps:directions-bike"
+    	};
+    	return iconMap[method];
+    },
+    
+    generateAviColour:function(){
+    	var num = Math.floor(Math.random() * (this.palette.length + 1)) - 1;
+    	if(num < 0){
+    		num = 0;
+    	}
+    	return "background:" + this.palette[num] + ";";
+    },
+    
+    generateAviIcon:function(){
+    	var num = Math.floor(Math.random() * (this.funIcons.length + 1)) - 1;
+    	if(num < 0){
+    		num = 0;
+    	}
+    	return this.funIcons[num];
+    }
+  });
+</script>
