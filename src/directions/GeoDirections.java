@@ -20,6 +20,8 @@ import com.google.maps.model.LatLng;
 import com.google.maps.model.TransitRoutingPreference;
 import com.google.maps.model.TravelMode;
 
+import servlets.UserController;
+
 public class GeoDirections {
 	
 	private String addressFrom;
@@ -234,16 +236,16 @@ public class GeoDirections {
 	
 	}
 	
-	private static List<LatLng> getAvaibleGuests(LatLng origin, LatLng userAddress, List<LatLng> waypoints)
+	public static List<EventUser> getAvailableGuests(LatLng origin, List<EventUser> guests)
 	{
 		GeoApiContext context = new GeoApiContext.Builder().apiKey("AIzaSyBQ-A3XwmrhTU2mvK7XXaflOiOEkBf7Rd0").build();
-		List<LatLng> userswhohavefriends = new ArrayList<LatLng>();
-		List<LatLng> guests = new ArrayList<LatLng>();
+		List<EventUser> userswhohavefriends = new ArrayList<EventUser>();
 		
-		for (int i = 0; i < waypoints.size(); i++)
+		for (int i = 0; i < guests.size(); i++)
 		{
 			try {
-				LatLng ll = waypoints.get(i);
+				EventUser user = guests.get(i);
+				LatLng ll = user.getOriginCoordinate();
 				DirectionsResult result = DirectionsApi.newRequest(context)
 						.origin(origin)
 						.destination(ll)
@@ -252,7 +254,7 @@ public class GeoDirections {
 				        .await();
 				if (result.routes[0].legs[0].duration.inSeconds < 1200) //1200 = 20 minutes
 				{
-					userswhohavefriends.add(ll);
+					userswhohavefriends.add(user);
 				}
 				System.out.println(result.toString());
 				
@@ -270,6 +272,17 @@ public class GeoDirections {
 		return userswhohavefriends;
 	}
 	
+	public static List<LatLng> getCoordinates(List<EventUser> guests, boolean isOrigin) {
+		List<LatLng> coordinates = new ArrayList<>();
+		for(EventUser guest : guests) {
+			if(isOrigin) {
+				coordinates.add(guest.getOriginCoordinate());
+			} else {
+				coordinates.add(guest.getDestCoordinate());
+			}
+		}
+		return coordinates;
+	}
 	
 	public static void main(String [] args)
 	{
@@ -296,8 +309,10 @@ public class GeoDirections {
 //			
 //			getOptimizedRoute(origin, destination, waypoints, null);
 			LatLng orgin = new LatLng(49.2834546,-123.1174435); //bcit downtown campus eh
-			List<LatLng> canjoin = getAvaibleGuests(orgin, mainUser, waypoints);
-			DirectionsResult dr = getOptimizedRoute(orgin, mainUser, canjoin);
+			
+			List<EventUser> guests = UserController.getEventUserList(UserController.getEventUsers("1"));
+			List<EventUser> canjoin = getAvailableGuests(orgin, guests);
+			DirectionsResult dr = getOptimizedRoute(orgin, mainUser, getCoordinates(canjoin, true));
 			System.out.println(dr);
 //			LatLng ln2 = new LatLng(49.3265176,-123.1418956);
 //			LatLng ln3 = new LatLng(49.3571979,-123.2641182);

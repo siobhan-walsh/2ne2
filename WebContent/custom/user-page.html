@@ -37,6 +37,7 @@
             <paper-input type="password" name="password" id="password" required label="Password"></paper-input>
             <div class="center">
 	            <paper-button id="submitButton" raised on-tap="submitForm">Submit</paper-button>
+	            <paper-button id="registerButton" raised on-tap="submitRegistration">Register</paper-button>
 	            <paper-button id="forgotButton" on-tap="#">Forgot Password</paper-button>
        		</div>
             <p class="center">OR Login in with</p>
@@ -82,10 +83,38 @@
     		  type: "POST",
     		  url: "/2NEWhere/UserController",
     		  data: params,
-    		  success: function(e) {console.log(e)},
+    		  complete: function(data) {
+    			  if (data) {
+    				  //open next page
+    			  }
+    		  },
     		  dataType: "application/json"
     		});
     },
+    submitRegistration:function() {
+    	var data = new Object();
+    	data.email = this.$.email.value;
+    	data.password = this.$.password.value;
+    	data.name = "";
+    	var params = new Object();
+    	data = JSON.stringify(data);
+    	params.cmd = "register";
+    	params.userData = data;
+    	
+    	$.ajax({
+    		  type: "POST",
+    		  url: "/2NEWhere/UserController",
+    		  data: params,
+    		  complete: function(data) {
+    			  if (data) {
+    				  alert("Registered!");
+    			  } else {
+    				  alert("Registration Failed");
+    			  }
+    		  },
+    		  dataType: "application/json"
+    		});
+    }
   });
 
 </script>
