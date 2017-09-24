@@ -23,28 +23,55 @@
       	  display: flex;
       	  justify-content: center;
       	  align-items: center;
+      	  margin-top:32px;
+      }
+      
+      .imgBox {
+      	width:100%;
+      }
+      
+      .imgBox img {
+      	display:block;
+      	margin:auto;
+      	max-width:300px;
+      }
+      
+      .or {
+      	margin-top:48px;
       }
 
     </style>
+    
+    <!-- 
     <paper-toolbar>
     	<paper-icon-button icon="menu"></paper-icon-button>
     	<div class="title">2NEWhere</div>
     	<paper-icon-button icon="more-vert"></paper-icon-button>
     </paper-toolbar>
+    
+     -->
+     <div class="imgBox">
+    		<img src="../logo-green.png">
+    	</div>
+     
     <div>
         <form id="login" method="POST" action="login" enctype="text/plain">
             <paper-input type="text" name="email" id="email" required label="Email"></paper-input>
             <paper-input type="password" name="password" id="password" required label="Password"></paper-input>
             <div class="center">
-	            <paper-button id="submitButton" raised on-tap="submitForm">Submit</paper-button>
-	            <paper-button id="registerButton" raised on-tap="submitRegistration">Register</paper-button>
-	            <paper-button id="forgotButton" on-tap="#">Forgot Password</paper-button>
+	            <paper-button id="submitButton" raised on-tap="submitForm">Login</paper-button>
+	            <paper-button id="registerButton" on-tap="submitRegistration">Register</paper-button>
+	         <!--  <paper-button id="forgotButton" on-tap="#">Forgot Password</paper-button> -->  
        		</div>
-            <p class="center">OR Login in with</p>
-			<div class = "center">
-	            <paper-button id="fbButton" raised on-tap="#">Facebook</paper-button>
-	            <paper-button id="googleButton" raised on-tap="#">Google</paper-button>
-            </div>
+       		
+       		
+       		<div class="or">
+	            <p class="center">OR Login in with</p>
+				<div class = "center">
+		            <paper-button id="fbButton" raised on-tap="#">Facebook</paper-button>
+		            <paper-button id="googleButton" raised on-tap="#">Google</paper-button>
+	            </div>
+       		</div>
         </form>
     </div>
        
