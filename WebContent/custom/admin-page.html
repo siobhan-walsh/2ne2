@@ -1,6 +1,8 @@
 
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
 <link rel="import" href="../bower_components/paper-styles/color.html">
 <link rel="import" href="../bower_components/paper-styles/typography.html">
 <link rel="import" href="../bower_components/paper-toolbar/paper-toolbar.html">
@@ -112,7 +114,18 @@
 		
 		/* Large and up */
 		@media screen and (min-width: 64em) {}
-		      
+		
+		#dialog {
+			width:300px;
+		}     
+		
+		.chip {
+		    display: inline-block;
+		    background: #e0e0e0; 
+		    padding: 0 12px;
+		    border-radius: 32px;
+		    font-size: 13px;
+		}
     </style>
     <paper-toolbar class="medium-tall">
     	<paper-icon-button icon="menu"></paper-icon-button>
@@ -145,6 +158,29 @@
 	    		</div>
 	    	</div>
 	    </template>
+	    
+	    <div on-tap="openInviteDialog">Invite more guests</div>
+	    
+	    <paper-dialog id="dialog">
+	    	<paper-dialog-scrollable>
+	    		<h2>Invite Guests</h2>
+	    		<div>
+	    			<paper-input id="inviteInp" label="Email address" type="email" error-message="Please enter a valid email address" on-keypress="handleKeypress"></paper-input>
+	    		</div>
+	    		<div>
+	    			<template is="dom-repeat" items="[[toInvite]]">
+	    				<div class="chip">
+			    			<div>[[item]]</div>
+			    			<iron-icon icon="clear"></iron-icon>
+	    				</div>
+	    			</template>
+	    		</div>
+	    		<div>
+	    			<paper-button dialog-dismiss>Cancel</paper-button>
+	    			<paper-button dialog-confirm>OK</paper-button>
+	    		</div>
+	    	</paper-dialog-scrollable>
+	    </paper-dialog>
     </div>
     
   </template>
@@ -195,11 +231,30 @@
     		value:function(){
     			return [];
     		}
+    	},
+    	
+    	toInvite:{
+    		type:Array,
+    		value:function(){
+    			return [];
+    		}
     	}
     },
     
     attached:function(){
     	this.getData();
+    },
+    
+    openInviteDialog: function(){
+    	this.$.dialog.open();
+    },
+    
+    handleKeypress: function(e){
+    	console.log("e", e);
+    	if(e.key === "Enter"){
+    		this.push("toInvite", this.$.inviteInp.value);
+    		this.$.inviteInp.value = "";
+    	}
     },
     
     formatUserData:function(userData){
