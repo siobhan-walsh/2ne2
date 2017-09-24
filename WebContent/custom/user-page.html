@@ -1,16 +1,11 @@
-
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../bower_components/paper-styles/color.html">
 <link rel="import" href="../bower_components/paper-styles/typography.html">
 <link rel="import" href="../bower_components/paper-toolbar/paper-toolbar.html">
-<link rel="import" href="../bower_components/paper-toolbar/paper-toolbar.html">
-<link rel="import" href="../bower_components/google-map/google-map.html">
-<link rel="import" href="../bower_components/google-apis/google-maps-api.html">
-
 <dom-module id="user-page">
   <template>
-    <style>
+    <style is="custom-style" include="iron-flex iron-flex-alignment">
       :host {
         display: block;
         @apply(--paper-font-common-base);
@@ -20,19 +15,46 @@
       	background:var(--paper-green-600);
       	color:white;
       }
+      #submitButton {
+      	background-color:#33B200;
+      	color: white;
+      }
+      .center {
+      	  display: flex;
+      	  justify-content: center;
+      	  align-items: center;
+      }
+
     </style>
     <paper-toolbar>
     	<paper-icon-button icon="menu"></paper-icon-button>
-    	<div class="title">Where you are going</div>
+    	<div class="title">2NEWhere</div>
     	<paper-icon-button icon="more-vert"></paper-icon-button>
     </paper-toolbar>
-    <google-map fit-to-marker api-key="AIzaSyBQ-A3XwmrhTU2mvK7XXaflOiOEkBf7Rd0">
-  		<google-map-marker latitude="37.78" longitude="-122.4" draggable="true"></google-map-marker>
-	</google-map>
+    <div>
+        <form id="login" method="POST" action="login" enctype="text/plain">
+            <paper-input type="text" name="email" id="email" required label="Email" value="{{email}}"></paper-input>
+            <paper-input type="password" name="password" id="password" required label="Password" value="{{password}}"></paper-input>
+            <div class="center">
+	            <paper-button id="submitButton" raised on-tap="submitForm">Submit</paper-button>
+	            <paper-button id="forgotButton" on-tap="#">Forgot Password</paper-button>
+       		</div>
+            <p class="center">OR Login in with</p>
+			<div class = "center">
+	            <paper-button id="fbButton" raised on-tap="#">Facebook</paper-button>
+	            <paper-button id="googleButton" raised on-tap="#">Google</paper-button>
+            </div>
+        </form>
+    </div>
+       
+        
+    
+    
   </template>
 </dom-module>
 
 <script>
+
   Polymer({
     is: 'user-page',
 
@@ -44,6 +66,20 @@
     
     attached:function(){
     	console.log("the user-page is attached!");	
-    }
+    },
+    
+    submitForm:function() {
+    	var data = new Object();
+    	data.email = this.email;
+    	data.password = this.password;
+    	data = JSON.stringify(data);
+    	$.ajax({
+    		  type: "POST",
+    		  url: "/UserController",
+    		  data: data,
+    		  success: function(e) {console.log(e)},
+    		  dataType: "application/json"
+    		});
+    },
   });
 </script>
