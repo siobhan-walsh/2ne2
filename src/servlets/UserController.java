@@ -17,10 +17,9 @@ import org.joda.time.DateTime;
 
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-
 import database.FirebaseConnector;
 import directions.EventUser;
+import directions.GeoDirections;
 import directions.User;
 
 public class UserController extends HttpServlet{
@@ -44,7 +43,8 @@ public class UserController extends HttpServlet{
 			break;
 		case "register":
 			User newUser = User.fromJson(request.getParameter("userData"));
-			saveUser(newUser);
+			boolean registerSuccess = saveUser(newUser);
+			o.print(registerSuccess);
 			break;
 		case "getEventUsers":
 			String eventUsersJson = getEventUsers(request.getParameter("eventId"));
@@ -52,24 +52,47 @@ public class UserController extends HttpServlet{
 			break;
 		case "saveEventUser":
 			EventUser eventUser = new EventUser();
-//			eventUser.setAddressFrom(addressFrom);
-//			eventUser.setAddressTo(addressTo);
+			eventUser.setAddressFrom(request.getParameter("addressFrom"));
+			eventUser.setAddressTo(request.getParameter("addressTo"));
+			eventUser.setArrivalTime(new DateTime().toString());
+			eventUser.setLeavingTime(new DateTime().toString());
+			eventUser.setNeedRide(Boolean.parseBoolean(request.getParameter("needRide")));
+			eventUser.setAdmin(false);
+			eventUser.setEmail(request.getParameter("email"));
+			eventUser.setStatus(EventUser.DONE);
+			eventUser.setTransportation(request.getParameter("transportation"));
 			eventUser.calculateLatLong();
+			String savedId = fbc.postData(EVENT_USER_TABLE, eventUser.toJson());
+			o.println(savedId);
+			break;
+		case "getNearbyUsers":
+			EventUser curUser = getEventUser(request.getParameter("email"));
+			List<EventUser> nearbyGuests = getEventUserList(getEventUsers(request.getParameter("eventId")));
+			List<EventUser> canjoin = GeoDirections.getAvailableGuests(curUser.getOriginCoordinate(), nearbyGuests);
+			String nearbyGuestList =  gson.toJson(canjoin);
+			o.println(nearbyGuestList);
 			break;
 		}
-
 		o.flush();
 		o.close();
 	}
 	
-	private static String getEventUsers(String eventId) {
+	public static String getEventUsers(String eventId) {
 		HashMap<String, String> params = new HashMap<>();
 		params.put("orderBy", "\"eventId\"");
 		params.put("equalTo", "\""+eventId+"\"");
 		return fbc.getData(EVENT_USER_TABLE, "", fbc.encodeParams(params));
 	}
 	
-	private static List<EventUser> getEventUserList(String eventUserJson) {
+	public static EventUser getEventUser(String email) {
+		HashMap<String, String> params = new HashMap<>();
+		params.put("orderBy", "\"email\"");
+		params.put("equalTo", "\""+email+"\"");
+		String userData = fbc.getData(EVENT_USER_TABLE, "", fbc.encodeParams(params));
+		return EventUser.fromJson(userData);
+	}
+	
+	public static List<EventUser> getEventUserList(String eventUserJson) {
 		List<EventUser> userList = new ArrayList<>();
 		Type gsonType = new TypeToken<Map<String,EventUser>>() {}.getType();
 		Map<String,EventUser> eventUsers = gson.fromJson(eventUserJson, gsonType);

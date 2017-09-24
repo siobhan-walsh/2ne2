@@ -2,12 +2,15 @@ package directions;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import org.joda.time.DateTime;
 import org.joda.time.Instant;
 
 import com.google.maps.DirectionsApi;
+import com.google.maps.DirectionsApi.RouteRestriction;
 import com.google.maps.GeoApiContext;
 import com.google.maps.errors.ApiException;
 import com.google.maps.model.DirectionsLeg;
@@ -16,6 +19,8 @@ import com.google.maps.model.DirectionsRoute;
 import com.google.maps.model.LatLng;
 import com.google.maps.model.TransitRoutingPreference;
 import com.google.maps.model.TravelMode;
+
+import servlets.UserController;
 
 public class GeoDirections {
 	
@@ -151,23 +156,20 @@ public class GeoDirections {
 		return result;
 	}
 	
-	public static void getOptimizedRoute(LatLng origin, LatLng destination, List<LatLng> extraWayPoints, DateTime time) throws Exception {		
+	public static DirectionsResult getOptimizedRoute(LatLng origin, LatLng destination, List<LatLng> extraWayPoints) throws Exception {		
 
-		Instant departTime = Instant.now();
-		if (time != null) {
-			departTime = time.toInstant();
-		}
 		
 		DirectionsResult result = DirectionsApi.newRequest(context)
         .origin(origin)
         .destination(destination)
-        .departureTime(departTime)
         .waypoints(extraWayPoints.toArray(new LatLng[extraWayPoints.size()]))
         .optimizeWaypoints(true)
         .mode(TravelMode.DRIVING)
         .await();
 		
 		System.out.println(result.routes[0].summary);
+		
+		return result;
 	}
 	
 	private List<Long> getCost(Long kilometers, Long duration){
@@ -234,6 +236,53 @@ public class GeoDirections {
 	
 	}
 	
+	public static List<EventUser> getAvailableGuests(LatLng origin, List<EventUser> guests)
+	{
+		GeoApiContext context = new GeoApiContext.Builder().apiKey("AIzaSyBQ-A3XwmrhTU2mvK7XXaflOiOEkBf7Rd0").build();
+		List<EventUser> userswhohavefriends = new ArrayList<EventUser>();
+		
+		for (int i = 0; i < guests.size(); i++)
+		{
+			try {
+				EventUser user = guests.get(i);
+				LatLng ll = user.getOriginCoordinate();
+				DirectionsResult result = DirectionsApi.newRequest(context)
+						.origin(origin)
+						.destination(ll)
+				        .optimizeWaypoints(true)
+				        .mode(TravelMode.DRIVING)
+				        .await();
+				if (result.routes[0].legs[0].duration.inSeconds < 1200) //1200 = 20 minutes
+				{
+					userswhohavefriends.add(user);
+				}
+				System.out.println(result.toString());
+				
+			} catch (ApiException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return userswhohavefriends;
+	}
+	
+	public static List<LatLng> getCoordinates(List<EventUser> guests, boolean isOrigin) {
+		List<LatLng> coordinates = new ArrayList<>();
+		for(EventUser guest : guests) {
+			if(isOrigin) {
+				coordinates.add(guest.getOriginCoordinate());
+			} else {
+				coordinates.add(guest.getDestCoordinate());
+			}
+		}
+		return coordinates;
+	}
 	
 	public static void main(String [] args)
 	{
@@ -244,23 +293,31 @@ public class GeoDirections {
 //			LatLng origin = new LatLng(49.2834546,-123.1174435);
 //			LatLng destination = new LatLng(49.3571979,-123.2641182);
 //			
-//			List<LatLng> waypoints = new ArrayList<LatLng>();
-//
-//			LatLng ln = new LatLng(49.2506488,-123.054083);
-//			LatLng ln2 = new LatLng(49.3265176,-123.1418956);
-//			LatLng ln3 = new LatLng(49.3571979,-123.2641182);
-//			
-//			waypoints.add(ln);
-//			waypoints.add(ln2);
-//			waypoints.add(ln3);
-//			
-//			getOptimizedRoute(origin, destination, waypoints, null);
+			List<LatLng> waypoints = new ArrayList<LatLng>();
 			
+			LatLng ln = new LatLng(49.2506488,-123.054083);
 			LatLng ln2 = new LatLng(49.3265176,-123.1418956);
 			LatLng ln3 = new LatLng(49.3571979,-123.2641182);
+			LatLng sanfran = new LatLng(37.726087,-122.446342); //san fran usa
 			
-			LatLng sanfran = new LatLng(37.726087,-122.446342);
-			getListOfBuses(ln2,sanfran);
+			LatLng mainUser = new LatLng(49.3509132,-123.249367);
+//			
+			waypoints.add(ln);
+			waypoints.add(ln2);
+			waypoints.add(ln3);
+			waypoints.add(sanfran);
+//			
+//			getOptimizedRoute(origin, destination, waypoints, null);
+			LatLng orgin = new LatLng(49.2834546,-123.1174435); //bcit downtown campus eh
+			
+			List<EventUser> guests = UserController.getEventUserList(UserController.getEventUsers("1"));
+			List<EventUser> canjoin = getAvailableGuests(orgin, guests);
+			DirectionsResult dr = getOptimizedRoute(orgin, mainUser, getCoordinates(canjoin, true));
+			System.out.println(dr);
+//			LatLng ln2 = new LatLng(49.3265176,-123.1418956);
+//			LatLng ln3 = new LatLng(49.3571979,-123.2641182);
+			
+			//getListOfBuses(ln2,ln3);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
