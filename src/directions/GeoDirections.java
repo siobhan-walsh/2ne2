@@ -1,5 +1,6 @@
 package directions;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,10 +9,12 @@ import org.joda.time.Instant;
 
 import com.google.maps.DirectionsApi;
 import com.google.maps.GeoApiContext;
+import com.google.maps.errors.ApiException;
 import com.google.maps.model.DirectionsLeg;
 import com.google.maps.model.DirectionsResult;
 import com.google.maps.model.DirectionsRoute;
 import com.google.maps.model.LatLng;
+import com.google.maps.model.TransitRoutingPreference;
 import com.google.maps.model.TravelMode;
 
 public class GeoDirections {
@@ -102,6 +105,70 @@ public class GeoDirections {
 		System.out.println(result.routes[0].summary);
 	}
 	
+	private List<Long> getCost(Long kilometers, Long duration){
+		List<Long> list = new ArrayList<>();
+		
+		list.add(getEvoCost(duration));
+		list.add(getTaxiCost(kilometers));
+		list.add(getUberCost(kilometers)); //assuming uber is available in ur area
+		
+		return list;
+	}
+	
+	private Long getUberCost(Long kilometers){
+		Long miles = (long) (0.621 * kilometers); //based on non busy times
+		Long costPerMile = (long) (0.97 * miles);
+		
+		return costPerMile;
+	}
+	
+	private Long getTaxiCost(Long kilometers){
+		Double startFare = 3.50; //starter fare
+		Long costPerKilometer = (long) (1.85 * kilometers + startFare);
+		
+		return costPerKilometer;
+	}
+	
+	private Long getEvoCost(Long duration){
+		Double perMinute = 0.41;
+		Long costPerMinute = (long) (perMinute * duration);
+		
+		return costPerMinute;
+		
+	}
+	
+	private static boolean getListOfBuses(LatLng origin, LatLng destination){
+		GeoApiContext context = new GeoApiContext.Builder().apiKey("AIzaSyBQ-A3XwmrhTU2mvK7XXaflOiOEkBf7Rd0").build();
+		boolean busAvailable = false;
+		try {
+			DirectionsResult result = DirectionsApi.newRequest(context)
+			        .origin(origin)
+			        .destination(destination)
+			        .departureTime(Instant.now())
+			        .optimizeWaypoints(true)
+			        .mode(TravelMode.TRANSIT)
+			        .transitRoutingPreference(TransitRoutingPreference.FEWER_TRANSFERS)
+			        .await();
+			if (result.routes.length > 0)
+			{
+				busAvailable = true;
+			}
+
+		} catch (ApiException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return busAvailable;
+	
+	}
+	
 	
 	public static void main(String [] args)
 	{
@@ -123,6 +190,12 @@ public class GeoDirections {
 //			waypoints.add(ln3);
 //			
 //			getOptimizedRoute(origin, destination, waypoints, null);
+			
+			LatLng ln2 = new LatLng(49.3265176,-123.1418956);
+			LatLng ln3 = new LatLng(49.3571979,-123.2641182);
+			
+			LatLng sanfran = new LatLng(37.726087,-122.446342);
+			getListOfBuses(ln2,sanfran);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
