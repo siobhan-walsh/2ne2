@@ -164,10 +164,14 @@
       	margin-left:4px;
 		}
 		
+		.logo {
+			max-height:100%;
+		}
     </style>
     <paper-toolbar>
     	<paper-icon-button icon="icons:arrow-back" on-tap="goBack"></paper-icon-button>
     	<div class="title">Jenny's Wedding</div>
+    	<img class="logo" src="../logo.png">
     </paper-toolbar>
     
     <div class="content">
@@ -218,6 +222,9 @@
 	    <paper-dialog id="successDialog">
 	    	<div>
 	    		Invites were sent successfully.
+	    	</div>
+	    	<div class="buttons">
+	    	<paper-button dialog-dismiss>ok</paper-button>
 	    	</div>
 	    </paper-dialog>
     </div>
