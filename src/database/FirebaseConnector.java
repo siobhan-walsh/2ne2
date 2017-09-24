@@ -4,20 +4,20 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.HashMap;
 
 import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPatch;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-
+import org.apache.http.impl.client.DefaultHttpClient;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 
 public class FirebaseConnector {
@@ -59,24 +59,7 @@ public class FirebaseConnector {
 		}
 		return false;
 	}
-	
-	public boolean patchData(String tableName, String jsonData) {
-		String url = FIREBASE_URL + tableName + REST_EXT + authenticationToken();
-		HttpPatch patchRequest = new HttpPatch(url);
-		StringEntity entity;
-		try {
-			entity = new StringEntity(jsonData);
-			patchRequest.setEntity(entity);
-			StatusAndResponse sReponse = this.makeRequest(patchRequest);
-			if (sReponse.getStatus() == 200) {
-				return true;
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return false;
-	}
-	
+		
 	//Returns a json with the key that was generated for the new data
 	// e.g. {"name":"-JSOpn9ZC54A4P4RoqVa"}
 	public String postData(String tableName, String jsonData) {
@@ -111,7 +94,12 @@ public class FirebaseConnector {
 	}
 	
 	public String getData(String tableName, String key, String query) {
-		String url = FIREBASE_URL + tableName + "/" + key + REST_EXT + authenticationToken() + query;
+		String keyValue = "";
+		if (key != null && !key.isEmpty()) {
+			keyValue = "/" + key;	
+		}
+		
+		String url = FIREBASE_URL + tableName + keyValue + REST_EXT + authenticationToken() + query;
 		HttpGet getRequest = new HttpGet(url);
 		try {
 			StatusAndResponse sReponse = this.makeRequest(getRequest);
@@ -131,7 +119,8 @@ public class FirebaseConnector {
 			return response;
 		}
 		
-		try (CloseableHttpClient httpClient = HttpClientBuilder.create().build()) {
+		try {
+			HttpClient httpClient = new DefaultHttpClient();
 			HttpResponse httpResponse = httpClient.execute(request);
 			Integer statusCode = httpResponse.getStatusLine().getStatusCode();
 			InputStream is = httpResponse.getEntity().getContent();
@@ -150,6 +139,17 @@ public class FirebaseConnector {
 		} 		
 		
 		return response;
+	}
+	
+	public String encodeParams(HashMap<String,String> params) {
+		if (params == null) {
+			return "";
+		}
+		String paramStr = "";
+		for (String key : params.keySet()) {
+			paramStr += "&" + key + "=" + URLEncoder.encode(params.get(key));
+		}
+		return paramStr;
 	}
 	
 	private String authenticationToken() {

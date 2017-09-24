@@ -54,6 +54,71 @@ public class GeoDirections {
 		}
 	}
 	
+	public String getAddressFrom() {
+		return addressFrom;
+	}
+
+	public void setAddressFrom(String addressFrom) {
+		this.addressFrom = addressFrom;
+	}
+
+	public LatLng getOriginCoordinate() {
+		return originCoordinate;
+	}
+
+	public void setOriginCoordinate(LatLng originCoordinate) {
+		this.originCoordinate = originCoordinate;
+	}
+
+	public String getAddressTo() {
+		return addressTo;
+	}
+
+	public void setAddressTo(String addressTo) {
+		this.addressTo = addressTo;
+	}
+
+	public LatLng getDestCoordinate() {
+		return destCoordinate;
+	}
+
+	public void setDestCoordinate(LatLng destCoordinate) {
+		this.destCoordinate = destCoordinate;
+	}
+
+	public List<LatLng> getCoordinatesOfTrip() {
+		return coordinatesOfTrip;
+	}
+
+	public void setCoordinatesOfTrip(List<LatLng> coordinatesOfTrip) {
+		this.coordinatesOfTrip = coordinatesOfTrip;
+	}
+
+	public Double getMinutesOfTrip() {
+		return minutesOfTrip;
+	}
+
+	public void setMinutesOfTrip(Double minutesOfTrip) {
+		this.minutesOfTrip = minutesOfTrip;
+	}
+
+	public Double getKilometersOfTrip() {
+		return kilometersOfTrip;
+	}
+
+	public void setKilometersOfTrip(Double kilometersOfTrip) {
+		this.kilometersOfTrip = kilometersOfTrip;
+	}
+
+	public DirectionsResult getDirectionsResponse() {
+		return directionsResponse;
+	}
+
+	public void setDirectionsResponse(DirectionsResult directionsResponse) {
+		this.directionsResponse = directionsResponse;
+	}
+
+
 	public void calculateDistanceAndDurationOfTrip(DirectionsResult result) {
 		Long distanceInM = 0l;
 		Long timeInSeconds = 0l;
