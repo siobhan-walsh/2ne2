@@ -130,19 +130,18 @@
 	    <div class="header">
 	    	Guests
 	    </div>
-	     
-	    <template is="dom-repeat" items="[[testItems]]">
+	     <template is="dom-repeat" items="[[userList]]">
 	    	<div class="row bottom-border">
 	    		<div class="avi" style$="[[generateAviColour()]]">
 	    			<iron-icon class="big-icon" icon="[[generateAviIcon()]]"></iron-icon>
 	    		</div>
 	    		<div class="flex">
-	    			<div class="name lower-case">[[item.name]]</div>
-	    			<div class="address">[[item.from]]</div>
+	    			<div class="name lower-case">[[item.email]]</div>
+	    			<div class="address">[[item.addressFrom]]</div>
 	    		</div>
 	    		<div class="box">
-	    			<iron-icon class="big-icon" icon="[[returnIcon(item.method)]]"></iron-icon>
-	    			<div class="method">[[item.method]]</div>
+	    			<iron-icon class="big-icon" icon="[[returnIcon(item.transportation)]]"></iron-icon>
+	    			<div class="method">[[item.transportation]]</div>
 	    		</div>
 	    	</div>
 	    </template>
@@ -191,46 +190,25 @@
     			];
     		}
     	},
-    	testItems:{
+    	userList:{
     		type:Array,
-    		value:[
-    			{
-    				"name":"judy",
-    				"method":"evo",
-    				"from":"Lynn Valley, North Vancouver"
-    			},
-    			{
-    				"name":"bob",
-    				"method":"bus",
-    				"from":"Langley"
-    			},
-    			
-    			{
-    				"name":"Joey",
-    				"method":"",
-    				"from":""
-    			},
-    			
-    			{
-    				"name":"Luna",
-    				"method":"bike",
-    				"from":"East Van"
-    			}
-    		]
+    		value:function(){
+    			return [];
+    		}
     	}
     },
     
     attached:function(){
-    	
+    	this.getData();
     },
     
-    returnIcon:function(method){
-    	var iconMap = {
-    		"evo":"custom-icons:evo",
-    		"bus":"maps:directions-bus",
-    		"bike":"maps:directions-bike"
-    	};
-    	return iconMap[method];
+    formatUserData:function(userData){
+    	var keys = Object.keys(userData);
+    	var userList = [];
+    	for(var i = 0; i < keys.length; i++){
+    		userList.push(userData[keys[i]]);
+    	}
+    	this.set("userList", userList);
     },
     
     generateAviColour:function(){
@@ -247,6 +225,38 @@
     		num = 0;
     	}
     	return this.funIcons[num];
+    },
+    
+    getData:function() {
+    	var _this = this;
+    	$.ajax({
+    		type: "POST",
+    		data: {"cmd":"getEventUsers", "eventId":"1"},
+    		url: "/2NEWhere/UserController",
+    		success: function(resp) {
+    			if(resp.responseText){
+    				_this.formatUserData(JSON.parse(resp.responseText));
+    			}
+    		},
+    		error:function(resp){
+    			if(resp.responseText){
+    				_this.formatUserData(JSON.parse(resp.responseText));
+    			}
+    		},
+    		dataType: "application/json"
+    	});
+    },
+    
+    returnIcon:function(method){
+    	var iconMap = {
+    		"evo":"custom-icons:evo",
+    		"taxi":"maps:local-taxi",
+    		"other":"",
+    		"driving":"notification:drive-eta",
+    		"bus":"maps:directions-bus",
+    		"bike":"maps:directions-bike"
+    	};
+    	return iconMap[method];
     }
   });
 </script>
