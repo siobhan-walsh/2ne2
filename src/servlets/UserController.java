@@ -2,7 +2,12 @@ package servlets;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -10,11 +15,16 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.joda.time.DateTime;
 
+import com.google.common.reflect.TypeToken;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+
 import database.FirebaseConnector;
 import directions.EventUser;
 import directions.User;
 
 public class UserController extends HttpServlet{
+	private static Gson gson = new Gson();
 	private static FirebaseConnector fbc = new FirebaseConnector();
 	private static String USER_TABLE = "Users";
 	private static String EVENT_USER_TABLE = "EventUsers";
@@ -40,8 +50,12 @@ public class UserController extends HttpServlet{
 			String eventUsersJson = getEventUsers(request.getParameter("eventId"));
 			o.print(eventUsersJson);
 			break;
-		case "getEvents":
-			
+		case "saveEventUser":
+			EventUser eventUser = new EventUser();
+//			eventUser.setAddressFrom(addressFrom);
+//			eventUser.setAddressTo(addressTo);
+			eventUser.calculateLatLong();
+			break;
 		}
 
 		o.flush();
@@ -53,6 +67,16 @@ public class UserController extends HttpServlet{
 		params.put("orderBy", "\"eventId\"");
 		params.put("equalTo", "\""+eventId+"\"");
 		return fbc.getData(EVENT_USER_TABLE, "", fbc.encodeParams(params));
+	}
+	
+	private static List<EventUser> getEventUserList(String eventUserJson) {
+		List<EventUser> userList = new ArrayList<>();
+		Type gsonType = new TypeToken<Map<String,EventUser>>() {}.getType();
+		Map<String,EventUser> eventUsers = gson.fromJson(eventUserJson, gsonType);
+		for (EventUser user : eventUsers.values()) {
+			userList.add(user);
+		}
+		return userList;
 	}
 
 	private static boolean saveUser(User newUser) {
@@ -71,6 +95,8 @@ public class UserController extends HttpServlet{
 		return false;
 	}
 	
+	
+	
 	public static void main(String[] args) throws IOException {
 		EventUser eu = new EventUser();
 		eu.setAddressFrom("798 Granville St, Vancouver, BC");
@@ -79,12 +105,14 @@ public class UserController extends HttpServlet{
 		eu.setLeavingTime(new DateTime().toString());
 		eu.setNeedRide(true);
 		eu.setAdmin(false);
-		eu.setEmail("michelle@cool.com");
+		eu.setEmail("teste@test.com");
 		eu.setStatus(EventUser.UNREGISTERED);
 		eu.setTransportation(EventUser.TAXI);
 		eu.setEventId("1");
+		eu.calculateLatLong();
 //		fbc.postData(EVENT_USER_TABLE, eu.toJson());
 		String response = getEventUsers("1");
+		getEventUserList(response);
 		System.out.println(response);
 	}
 }

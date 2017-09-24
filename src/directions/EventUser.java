@@ -1,6 +1,7 @@
 package directions;
 
 import com.google.gson.Gson;
+import com.google.maps.model.LatLng;
 
 //Description of Users in the context of setting up an event
 public class EventUser {
@@ -22,6 +23,8 @@ public class EventUser {
 	private String email;
 	private boolean admin;
 	private String addressFrom;
+	private LatLng originCoordinate;
+	private LatLng destCoordinate;
 	private String leavingTime;
 	private String addressTo;
 	private String arrivalTime;
@@ -88,6 +91,24 @@ public class EventUser {
 	}
 	public void setNeedRide(boolean needRide) {
 		this.needRide = needRide;
+	}
+	public LatLng getOriginCoordinate() {
+		return originCoordinate;
+	}
+	public void setOriginCoordinate(LatLng originCoordinate) {
+		this.originCoordinate = originCoordinate;
+	}
+	public LatLng getDestCoordinate() {
+		return destCoordinate;
+	}
+	public void setDestCoordinate(LatLng destCoordinate) {
+		this.destCoordinate = destCoordinate;
+	}
+
+	public void calculateLatLong(){
+		GeoDirections gd = new GeoDirections(addressFrom, addressTo);
+		this.setOriginCoordinate(gd.getOriginCoordinate());
+		this.setDestCoordinate(gd.getDestCoordinate());
 	}
 	
 	public String toJson() {
