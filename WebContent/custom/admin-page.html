@@ -8,6 +8,7 @@
 <link rel="import" href="../bower_components/paper-toolbar/paper-toolbar.html">
 <link rel="import" href="../bower_components/paper-tabs/paper-tabs.html">
 <link rel="import" href="../bower_components/paper-tabs/paper-tab.html">
+<link rel="import" href="../bower_components/paper-fab/paper-fab.html">
 <link rel="import" href="../bower_components/iron-icon/iron-icon.html">
 <link rel="import" href="../bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="../bower_components/iron-icons/maps-icons.html">
@@ -61,10 +62,6 @@
       	padding:8px;
       }
       
-      :host .name {
-      	@apply(--paper-font-display1);
-      }
-      
       :host .lower-case {
       	text-transform:lowercase;
       }
@@ -82,10 +79,6 @@
       	--iron-icon-width: 32px;
       }
       
-      :host .flex {
-      	@apply(--layout-flex);
-      }
-      
       :host .box {
       	min-width:32px;
       }
@@ -99,7 +92,20 @@
       @media screen and (max-width: 39.9375em) {
 	       .content {
 	      	margin:16px;
+	      	max-width:calc(100% - 16px);
 	      }
+	      
+	      :host .name {
+	      	@apply(--paper-font-body2);
+	      }
+	      
+		
+		.fab {
+			position:fixed;
+			bottom:15vh;
+			right:15vw;
+			background: #B200A2;
+		}
       }
       
 		/* Medium and up */
@@ -109,6 +115,22 @@
 				margin:0px 20%;
 				background:light-blue;
 			}
+			:host .name {
+		      	@apply(--paper-font-display1);
+		      }
+		      
+      
+		      :host .flex {
+		      	@apply(--layout-flex);
+		      }
+		      
+		
+				.fab {
+					position:fixed;
+					bottom:15vh;
+					right:10vw;
+					background: #B200A2;
+				}
 		}
 		
 		
@@ -125,18 +147,27 @@
 		    padding: 0 12px;
 		    border-radius: 32px;
 		    font-size: 13px;
+		    height:32px;
+		    margin:4px;
 		}
+		
+		.chip .inner {
+		    @apply(--layout-horizontal);
+		    @apply(--layout-center);
+		    height:32px;
+		}
+		
+		.chip iron-icon {
+			
+      	--iron-icon-height: 18px;
+      	--iron-icon-width: 18px;
+      	margin-left:4px;
+		}
+		
     </style>
-    <paper-toolbar class="medium-tall">
-    	<paper-icon-button icon="menu"></paper-icon-button>
-    	<div class="title">Michelle's Dream Wedding</div>
-    	<div class="middle">
-	    	<paper-tabs selected="0">
-			  <paper-tab>All</paper-tab>
-			  <paper-tab>Unregistered</paper-tab>
-			  <paper-tab>Done</paper-tab>
-			</paper-tabs>
-    	</div>
+    <paper-toolbar>
+    	<paper-icon-button icon="icons:arrow-back" on-tap="goBack"></paper-icon-button>
+    	<div class="title">Jenny's Wedding</div>
     </paper-toolbar>
     
     <div class="content">
@@ -158,10 +189,9 @@
 	    		</div>
 	    	</div>
 	    </template>
+	    <paper-fab on-tap="openInviteDialog" icon="add" class="fab"></paper-fab>
 	    
-	    <div on-tap="openInviteDialog">Invite more guests</div>
-	    
-	    <paper-dialog id="dialog">
+	    <paper-dialog id="dialog" on-iron-overlay-closed="showSuccess">
 	    	<paper-dialog-scrollable>
 	    		<h2>Invite Guests</h2>
 	    		<div>
@@ -170,16 +200,25 @@
 	    		<div>
 	    			<template is="dom-repeat" items="[[toInvite]]">
 	    				<div class="chip">
+	    					<div class="inner">
 			    			<div>[[item]]</div>
-			    			<iron-icon icon="clear"></iron-icon>
+			    			<iron-icon icon="icons:cancel" on-tap="removeInvite"></iron-icon>
+	    					
+	    					</div>
 	    				</div>
 	    			</template>
 	    		</div>
 	    		<div>
 	    			<paper-button dialog-dismiss>Cancel</paper-button>
-	    			<paper-button dialog-confirm>OK</paper-button>
+	    			<paper-button dialog-confirm>Send invite(s)</paper-button>
 	    		</div>
 	    	</paper-dialog-scrollable>
+	    </paper-dialog>
+	    
+	    <paper-dialog id="successDialog">
+	    	<div>
+	    		Invites were sent successfully.
+	    	</div>
 	    </paper-dialog>
     </div>
     
@@ -249,8 +288,13 @@
     	this.$.dialog.open();
     },
     
+    showSuccess: function(e){
+    	if(e.detail.confirmed){
+    		this.$.successDialog.open();
+    	}
+    },
+    
     handleKeypress: function(e){
-    	console.log("e", e);
     	if(e.key === "Enter"){
     		this.push("toInvite", this.$.inviteInp.value);
     		this.$.inviteInp.value = "";
@@ -300,6 +344,19 @@
     		},
     		dataType: "application/json"
     	});
+    },
+    
+    goBack:function(){
+    	window.open("index.html", "_self");
+    },
+    
+    removeInvite:function(e){
+    	for(var i = 0; i < this.toInvite.length; i++){
+    		if(this.toInvite[i] === e.model.item){
+    			this.splice("toInvite", i, 1);
+    			break;
+    		}
+    	}
     },
     
     returnIcon:function(method){
