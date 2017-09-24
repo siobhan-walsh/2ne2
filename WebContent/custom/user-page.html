@@ -33,8 +33,8 @@
     </paper-toolbar>
     <div>
         <form id="login" method="POST" action="login" enctype="text/plain">
-            <paper-input type="text" name="email" id="email" required label="Email" value="{{email}}"></paper-input>
-            <paper-input type="password" name="password" id="password" required label="Password" value="{{password}}"></paper-input>
+            <paper-input type="text" name="email" id="email" required label="Email"></paper-input>
+            <paper-input type="password" name="password" id="password" required label="Password"></paper-input>
             <div class="center">
 	            <paper-button id="submitButton" raised on-tap="submitForm">Submit</paper-button>
 	            <paper-button id="forgotButton" on-tap="#">Forgot Password</paper-button>
@@ -70,13 +70,18 @@
     
     submitForm:function() {
     	var data = new Object();
-    	data.email = this.email;
-    	data.password = this.password;
+    	data.email = this.$.email.value;
+    	data.password = this.$.password.value;
+    	data.name = "";
+    	var params = new Object();
     	data = JSON.stringify(data);
+    	params.cmd = "login";
+    	params.userData = data;
+    	
     	$.ajax({
     		  type: "POST",
-    		  url: "/UserController",
-    		  data: data,
+    		  url: "/2NEWhere/UserController",
+    		  data: params,
     		  success: function(e) {console.log(e)},
     		  dataType: "application/json"
     		});
