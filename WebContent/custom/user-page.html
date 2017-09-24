@@ -15,6 +15,7 @@
       	background:var(--paper-green-600);
       	color:white;
       }
+      
       #submitButton {
       	background-color:#33B200;
       	color: white;
@@ -39,6 +40,14 @@
       .or {
       	margin-top:48px;
       }
+      
+      /* Medium and up */
+		@media screen and (min-width: 40em) {
+			.content {
+				max-width:60%;
+				margin:16px 20%;
+			}
+		}
 
     </style>
     
@@ -54,7 +63,7 @@
     		<img src="../logo-green.png">
     	</div>
      
-    <div>
+    <div class="content">
         <form id="login" method="POST" action="login" enctype="text/plain">
             <paper-input type="text" name="email" id="email" required label="Email"></paper-input>
             <paper-input type="password" name="password" id="password" required label="Password"></paper-input>
