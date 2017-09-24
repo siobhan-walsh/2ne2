@@ -2,8 +2,6 @@ package servlets;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.net.URLEncoder;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -45,9 +43,11 @@ public class UserController extends HttpServlet{
 	private static boolean checkUser(User user) {
 		String email = user.getEmail();
 		String userData = fbc.getData(USER_TABLE,email.replace(".","_"),"");
-		if (userData != null) {
+		if (userData != null && user != null && user.getPassword() != null) {
 			User checkUser = User.fromJson(userData);
-			return user.getPassword().equals(checkUser.getPassword());
+			if (checkUser != null) {
+				return user.getPassword().equals(checkUser.getPassword());
+			}
 		}
 		return false;
 	}

@@ -73,10 +73,13 @@
     	data.email = this.email;
     	data.password = this.password;
     	data = JSON.stringify(data);
+    	var params = new Object();
+    	params.cmd = "login";
+    	params.userData = data;
     	$.ajax({
     		  type: "POST",
-    		  url: "/UserController",
-    		  data: data,
+    		  url: "/2NEWhere/UserController",
+    		  data: params,
     		  success: function(e) {console.log(e)},
     		  dataType: "application/json"
     		});
