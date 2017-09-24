@@ -50,7 +50,7 @@ public class GeoDirections {
 		directionsResponse = getDirections(this.addressFrom, this.addressTo);
 		
 		calculateDistanceAndDurationOfTrip(directionsResponse);	
-		if (!coordinatesOfTrip.isEmpty()) {
+		if (coordinatesOfTrip != null && !coordinatesOfTrip.isEmpty()) {
 			originCoordinate = coordinatesOfTrip.get(0);
 			destCoordinate = coordinatesOfTrip.get(coordinatesOfTrip.size()-1);
 		}

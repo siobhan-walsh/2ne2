@@ -1,6 +1,7 @@
 package directions;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonParser;
 import com.google.maps.model.LatLng;
 
 //Description of Users in the context of setting up an event

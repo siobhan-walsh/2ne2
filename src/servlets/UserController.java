@@ -17,7 +17,11 @@ import org.joda.time.DateTime;
 
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
 import database.FirebaseConnector;
+import database.Tuple;
 import directions.EventUser;
 import directions.GeoDirections;
 import directions.User;
@@ -33,6 +37,7 @@ public class UserController extends HttpServlet{
 	}
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		Tuple keyAndUser = null;
 		String command = request.getParameter("cmd");
 		PrintWriter o = response.getWriter();
 		switch (command) {
@@ -46,27 +51,39 @@ public class UserController extends HttpServlet{
 			boolean registerSuccess = saveUser(newUser);
 			o.print(registerSuccess);
 			break;
+		case "inviteUser": 
+			EventUser invitedUser = new EventUser();
+			invitedUser.setStatus(EventUser.UNREGISTERED);
+			invitedUser.setEmail(request.getParameter("email"));
+			String savedId = fbc.postData(EVENT_USER_TABLE, invitedUser.toJson());
+			o.println(savedId);
+			break;
 		case "getEventUsers":
 			String eventUsersJson = getEventUsers(request.getParameter("eventId"));
 			o.print(eventUsersJson);
 			break;
 		case "saveEventUser":
-			EventUser eventUser = new EventUser();
+			String eventUserToUpdate = request.getParameter("email");
+			keyAndUser = getEventUser(request.getParameter("email"));
+			
+			EventUser eventUser = (EventUser) keyAndUser.getY();
 			eventUser.setAddressFrom(request.getParameter("addressFrom"));
-			eventUser.setAddressTo(request.getParameter("addressTo"));
-			eventUser.setArrivalTime(new DateTime().toString());
-			eventUser.setLeavingTime(new DateTime().toString());
+			eventUser.setAddressTo("555 Seymour St, Vancouver, BC");
+			eventUser.setArrivalTime(null);
+			eventUser.setLeavingTime(null);
 			eventUser.setNeedRide(Boolean.parseBoolean(request.getParameter("needRide")));
 			eventUser.setAdmin(false);
 			eventUser.setEmail(request.getParameter("email"));
 			eventUser.setStatus(EventUser.DONE);
 			eventUser.setTransportation(request.getParameter("transportation"));
 			eventUser.calculateLatLong();
-			String savedId = fbc.postData(EVENT_USER_TABLE, eventUser.toJson());
-			o.println(savedId);
+			
+			boolean savedExtraData = fbc.putData(EVENT_USER_TABLE, (String) keyAndUser.getX(), eventUser.toJson());
+			o.println(savedExtraData);
 			break;
 		case "getNearbyUsers":
-			EventUser curUser = getEventUser(request.getParameter("email"));
+			keyAndUser = getEventUser(request.getParameter("email"));
+			EventUser curUser = (EventUser) keyAndUser.getY();
 			List<EventUser> nearbyGuests = getEventUserList(getEventUsers(request.getParameter("eventId")));
 			List<EventUser> canjoin = GeoDirections.getAvailableGuests(curUser.getOriginCoordinate(), nearbyGuests);
 			String nearbyGuestList =  gson.toJson(canjoin);
@@ -84,12 +101,20 @@ public class UserController extends HttpServlet{
 		return fbc.getData(EVENT_USER_TABLE, "", fbc.encodeParams(params));
 	}
 	
-	public static EventUser getEventUser(String email) {
+	public static Tuple getEventUser(String email) {
 		HashMap<String, String> params = new HashMap<>();
 		params.put("orderBy", "\"email\"");
 		params.put("equalTo", "\""+email+"\"");
 		String userData = fbc.getData(EVENT_USER_TABLE, "", fbc.encodeParams(params));
-		return EventUser.fromJson(userData);
+		JsonParser jsonParser = new JsonParser();
+		JsonObject jsonObject = jsonParser.parse(userData).getAsJsonObject();
+		String keyStr = "";
+		for (String key : jsonObject.keySet()) {
+			keyStr = key;
+			break;
+		}
+		
+		return new Tuple(keyStr, EventUser.fromJson(jsonObject.get(keyStr).toString()));
 	}
 	
 	public static List<EventUser> getEventUserList(String eventUserJson) {
@@ -134,8 +159,9 @@ public class UserController extends HttpServlet{
 		eu.setEventId("1");
 		eu.calculateLatLong();
 //		fbc.postData(EVENT_USER_TABLE, eu.toJson());
-		String response = getEventUsers("1");
-		getEventUserList(response);
-		System.out.println(response);
+//		String response = getEventUsers("1");
+//		getEventUserList(response);
+//		System.out.println(response);
+		
 	}
 }

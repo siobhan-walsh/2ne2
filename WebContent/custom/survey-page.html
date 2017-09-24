@@ -146,11 +146,11 @@
 	    <div class="header">
 	    	Where are you coming from?
 	    </div>
-	    <paper-input required name="address" always-float-label label="Address"></paper-input>
-	    <paper-input required name="city" always-float-label label="City"></paper-input>
-	    <paper-input required name="postalCode" always-float-label label="Postal Code"></paper-input>
-	    <paper-input required name="province" always-float-label label="Province"></paper-input>
-	    <paper-input required name="country" always-float-label label="Country"></paper-input>
+	    <paper-input required id="address" always-float-label label="Address"></paper-input>
+	    <paper-input required id="city" always-float-label label="City"></paper-input>
+	    <paper-input required id="postalCode" always-float-label label="Postal Code"></paper-input>
+	    <paper-input required id="province" always-float-label label="Province"></paper-input>
+	    <paper-input required id="country" always-float-label label="Country"></paper-input>
 		
 		<paper-button raised on-tap="nextPage">NEXT</paper-button>
     </div>
@@ -169,8 +169,30 @@
 	    			<div class="time">20 minutes</div>
 	    			<div class="address">$15</div>
 	    		</div>
-	    		<iron-icon icon="icons:chevron-right"></iron-icon>
+	    		<iron-icon icon="icons:chevron-right" on-tap="nextPage2" data-transportation="driving"></iron-icon>
 	    	</div>
+	    	<div class="row bottom-border">
+	    			<iron-icon class="big-icon" icon="maps:directions-car"></iron-icon>
+	    		<div class="flex">
+	    			<div class="name lower-case">Own Car</div>
+	    		</div>
+	    		<div class="box">
+	    			<div class="time">20 minutes</div>
+	    			<div class="address">$0</div>
+	    		</div>
+	    		<iron-icon icon="icons:chevron-right" on-tap="nextPage2"></iron-icon>
+	    	</div>	    	
+	    	<div class="row bottom-border">
+	    		<iron-icon class="big-icon" icon="maps:local-taxi"></iron-icon>
+	    		<div class="flex">
+	    			<div class="name lower-case">Taxi</div>
+	    		</div>
+	    		<div class="box">
+	    			<div class="time">22 minutes</div>
+	    			<div class="address">$30</div>
+	    		</div>
+	    		<iron-icon icon="icons:chevron-right" on-tap="nextPage2"></iron-icon>
+	    	</div>	    	
 	    	
 	    	<div class="row bottom-border">
 	    			<iron-icon class="big-icon" icon="maps:directions-bus"></iron-icon>
@@ -178,11 +200,22 @@
 	    			<div class="name lower-case">Bus</div>
 	    		</div>
 	    		<div class="box">
-	    			<div class="time">44 minutes</di>
+	    			<div class="time">44 minutes</div>
 	    			<div class="address">$2.75</div>
 	    		</div>
-	    		<iron-icon icon="icons:chevron-right"></iron-icon>
+	    		<iron-icon icon="icons:chevron-right" on-tap="nextPage2"></iron-icon>
 	    	</div>
+	    	<div class="row bottom-border">
+	    			<iron-icon class="big-icon" icon="maps:directions-bus"></iron-icon>
+	    		<div class="flex">
+	    			<div class="name lower-case" on-tap="nextPage2">Need Help Getting There</div>
+	    		</div>
+	    		<div class="box">
+	    			<div class="time">?? Minutes</div>
+	    			<div class="address">$??</div>
+	    		</div>
+	    		<iron-icon icon="icons:chevron-right"></iron-icon>
+	    	</div>	    	
 	    	
 	    </div>
 	    
@@ -206,20 +239,14 @@
 		    <paper-radio-button name="yes">Yes</paper-radio-button>
 		    <paper-radio-button name="no">No</paper-radio-button>
 	    </paper-radio-group>
-	    <paper-button raised on-tap="nextPage">NEXT</paper-button>
+	    <paper-button raised on-tap="nextPage3">NEXT</paper-button>
 		
     </div>
     
     <div id="page4" class="content"> 
 	    <div class="header">
-	    	Do you have room for other people?
+	    	REGISTATION COMPLETE
 	    </div>
-	    <paper-radio-group>
-		    <paper-radio-button name="Yes">Yes</paper-radio-button>
-		    <paper-radio-button name="No">No</paper-radio-button>
-	    </paper-radio-group>
-	    <paper-button raised on-tap="nextPage">NEXT</paper-button>
-		
     </div>
     
   </template>
@@ -283,6 +310,22 @@
     				"from":"East Van"
     			}
     		]
+    	},
+    	transportation:{
+    		type: "String",
+    		value: ""
+    	},
+    	address: {
+    		type: "String",
+    		value: ""
+    	},
+    	email: {
+    		type: "String",
+    		value: ""
+    	},
+    	needRide: {
+    		type: "Boolean",
+    		value: false
     	}
     },
     
@@ -291,20 +334,58 @@
     },
     
     nextPage:function(){
+    	this.email = sessionStorage.email;
+    	this.address = 	this.$.address.value + " " + 
+    					this.$.city.value + " " +
+	    				this.$.province.value + " " +
+	    				this.$.postalCode.value;
     	this.$.page1.hidden = true;
     	this.$.page2.classList.add("slideIn");
     },
     
-    nextPage2:function(){
-    	this.$.page2.hidden = true;
-    	this.$.page3.classList.add("slideIn");
+    nextPage2:function(event){
+    	this.transportation = event.target.getAttribute('data-transportation')
+    	if (this.transportation == "driving" || this.transportation == "taxi") {
+        	this.$.page2.hidden = true;
+        	this.$.page3.classList.add("slideIn");
+    	} else {
+    		this.goToEndPage(this.$.page2);
+    	}
+
     },
-    
+    nextPage3:function(event){
+    	this.goToEndPage(this.$.page3);
+
+    },
+    goToEndPage:function(currentPage){
+    	currentPage.hidden = true;
+    	this.$.page4.classList.add("slideIn");
+    	var _this = this;
+    	$.ajax({
+    		type: "POST",
+    		data: {
+    			"cmd":"saveEventUser", 
+    			"eventId":"1",
+    			"addressFrom" : this.address,
+    			"needRide" : this.needRide,
+    			"email" : this.email,
+    			"transportation" : this.transportation
+    		},
+    		url: "/2NEWhere/UserController",
+    		complete: function(resp) {
+    			if(resp.responseText == "true"){
+    				//Do something
+    			}
+    		},
+    		dataType: "application/json"
+    	});
+    },
     returnIcon:function(method){
     	var iconMap = {
     		"evo":"custom-icons:evo",
     		"bus":"maps:directions-bus",
-    		"bike":"maps:directions-bike"
+    		"bike":"maps:directions-bike",
+    		"car":"maps:directions-car"
     	};
     	return iconMap[method];
     },

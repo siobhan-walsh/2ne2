@@ -78,14 +78,15 @@
     	data = JSON.stringify(data);
     	params.cmd = "login";
     	params.userData = data;
-    	
+    	var _this = this;
     	$.ajax({
     		  type: "POST",
     		  url: "/2NEWhere/UserController",
     		  data: params,
     		  complete: function(data) {
-    			  if (data) {
-    				  //open next page
+    			  if (data.responseText == "true") {
+    				  sessionStorage.email = _this.$.email.value;
+    				  window.open("user.html", "_self");
     			  }
     		  },
     		  dataType: "application/json"
@@ -106,7 +107,7 @@
     		  url: "/2NEWhere/UserController",
     		  data: params,
     		  complete: function(data) {
-    			  if (data) {
+    			  if (data.responseText == "true") {
     				  alert("Registered!");
     			  } else {
     				  alert("Registration Failed");
