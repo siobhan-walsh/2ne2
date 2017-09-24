@@ -2,17 +2,22 @@ package servlets;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.HashMap;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.joda.time.DateTime;
+
 import database.FirebaseConnector;
+import directions.EventUser;
 import directions.User;
 
 public class UserController extends HttpServlet{
 	private static FirebaseConnector fbc = new FirebaseConnector();
 	private static String USER_TABLE = "Users";
+	private static String EVENT_USER_TABLE = "EventUsers";
 	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		doPost(request, response);
@@ -20,22 +25,36 @@ public class UserController extends HttpServlet{
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		String command = request.getParameter("cmd");
+		PrintWriter o = response.getWriter();
 		switch (command) {
 		case "login":
 			User user = User.fromJson(request.getParameter("userData"));
-			checkUser(user);
+			boolean success = checkUser(user);
+			o.print(success);
 			break;
 		case "register":
 			User newUser = User.fromJson(request.getParameter("userData"));
 			saveUser(newUser);
 			break;
+		case "getEventUsers":
+			String eventUsersJson = getEventUsers(request.getParameter("eventId"));
+			o.print(eventUsersJson);
+			break;
+		case "getEvents":
+			
 		}
-				
-		PrintWriter o = response.getWriter();
+
 		o.flush();
 		o.close();
 	}
 	
+	private static String getEventUsers(String eventId) {
+		HashMap<String, String> params = new HashMap<>();
+		params.put("orderBy", "\"eventId\"");
+		params.put("equalTo", "\""+eventId+"\"");
+		return fbc.getData(EVENT_USER_TABLE, "", fbc.encodeParams(params));
+	}
+
 	private static boolean saveUser(User newUser) {
 		return fbc.putData(USER_TABLE, newUser.getEmail().replace(".","_"), newUser.toJson());	
 	}
@@ -53,24 +72,19 @@ public class UserController extends HttpServlet{
 	}
 	
 	public static void main(String[] args) throws IOException {
-		String command = "login";
-		switch (command) {
-		case "login":
-//			User user = User.fromJson(request.getParameter("userData"));
-			User user = new User();
-			user.setEmail("cchan@agreementexpress.com");
-			user.setName("Test");
-			user.setPassword("password");
-			boolean passwordMatch = checkUser(user);
-			break;
-		case "register":
-//			User newUser = User.fromJson(request.getParameter("userData"));
-			User newUser = new User();
-			newUser.setEmail("cchan@agreementexpress.com");
-			newUser.setName("Test");
-			newUser.setPassword("password");
-			saveUser(newUser);
-			break;
-		}
+		EventUser eu = new EventUser();
+		eu.setAddressFrom("798 Granville St, Vancouver, BC");
+		eu.setAddressTo("555 Seymour St, Vancouver, BC");
+		eu.setArrivalTime(new DateTime().toString());
+		eu.setLeavingTime(new DateTime().toString());
+		eu.setNeedRide(true);
+		eu.setAdmin(false);
+		eu.setEmail("michelle@cool.com");
+		eu.setStatus(EventUser.UNREGISTERED);
+		eu.setTransportation(EventUser.TAXI);
+		eu.setEventId("1");
+//		fbc.postData(EVENT_USER_TABLE, eu.toJson());
+		String response = getEventUsers("1");
+		System.out.println(response);
 	}
 }

@@ -4,8 +4,10 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.HashMap;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -92,7 +94,12 @@ public class FirebaseConnector {
 	}
 	
 	public String getData(String tableName, String key, String query) {
-		String url = FIREBASE_URL + tableName + "/" + key + REST_EXT + authenticationToken() + query;
+		String keyValue = "";
+		if (key != null && !key.isEmpty()) {
+			keyValue = "/" + key;	
+		}
+		
+		String url = FIREBASE_URL + tableName + keyValue + REST_EXT + authenticationToken() + query;
 		HttpGet getRequest = new HttpGet(url);
 		try {
 			StatusAndResponse sReponse = this.makeRequest(getRequest);
@@ -132,6 +139,17 @@ public class FirebaseConnector {
 		} 		
 		
 		return response;
+	}
+	
+	public String encodeParams(HashMap<String,String> params) {
+		if (params == null) {
+			return "";
+		}
+		String paramStr = "";
+		for (String key : params.keySet()) {
+			paramStr += "&" + key + "=" + URLEncoder.encode(params.get(key));
+		}
+		return paramStr;
 	}
 	
 	private String authenticationToken() {
