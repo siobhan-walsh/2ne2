@@ -252,7 +252,7 @@ public class GeoDirections {
 				        .optimizeWaypoints(true)
 				        .mode(TravelMode.DRIVING)
 				        .await();
-				if (result.routes[0].legs[0].duration.inSeconds < 1200) //1200 = 20 minutes
+				if (result.routes[0].legs[0].duration.inSeconds < 2400) //1200 = 20 minutes
 				{
 					userswhohavefriends.add(user);
 				}

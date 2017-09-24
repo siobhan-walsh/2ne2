@@ -180,7 +180,7 @@
 	    			<div class="time">20 minutes</div>
 	    			<div class="address">$0</div>
 	    		</div>
-	    		<iron-icon icon="icons:chevron-right" on-tap="nextPage2"></iron-icon>
+	    		<iron-icon icon="icons:chevron-right" on-tap="nextPage2" data-transportation="driving"></iron-icon>
 	    	</div>	    	
 	    	<div class="row bottom-border">
 	    		<iron-icon class="big-icon" icon="maps:local-taxi"></iron-icon>
@@ -191,7 +191,7 @@
 	    			<div class="time">22 minutes</div>
 	    			<div class="address">$30</div>
 	    		</div>
-	    		<iron-icon icon="icons:chevron-right" on-tap="nextPage2"></iron-icon>
+	    		<iron-icon icon="icons:chevron-right" on-tap="nextPage2" data-transportation="taxi"></iron-icon>
 	    	</div>	    	
 	    	
 	    	<div class="row bottom-border">
@@ -203,18 +203,18 @@
 	    			<div class="time">44 minutes</div>
 	    			<div class="address">$2.75</div>
 	    		</div>
-	    		<iron-icon icon="icons:chevron-right" on-tap="nextPage2"></iron-icon>
+	    		<iron-icon icon="icons:chevron-right" on-tap="nextPage2" data-transportation="public transit"></iron-icon>
 	    	</div>
 	    	<div class="row bottom-border">
 	    			<iron-icon class="big-icon" icon="maps:directions-bus"></iron-icon>
 	    		<div class="flex">
-	    			<div class="name lower-case" on-tap="nextPage2">Need Help Getting There</div>
+	    			<div class="name lower-case">Need Help Getting There</div>
 	    		</div>
 	    		<div class="box">
 	    			<div class="time">?? Minutes</div>
 	    			<div class="address">$??</div>
 	    		</div>
-	    		<iron-icon icon="icons:chevron-right"></iron-icon>
+	    		<iron-icon icon="icons:chevron-right"  on-tap="nextPage2" data-transportation="help"></iron-icon>
 	    	</div>	    	
 	    	
 	    </div>
@@ -245,8 +245,24 @@
     
     <div id="page4" class="content"> 
 	    <div class="header">
-	    	REGISTATION COMPLETE
+	    	REGISTRATION COMPLETE
 	    </div>
+    </div>
+    
+    <div id="page5" class="content"> 
+	     <template is="dom-repeat" items="[[nearbyUserList]]">
+	    	<div class="row bottom-border">
+	    		<div class="flex">
+	    			<div class="name lower-case">[[item.email]]</div>
+	    			<div class="address">[[item.addressFrom]]</div>
+	    		</div>
+	    		<div class="box">
+	    			<iron-icon class="big-icon" icon="[[returnIcon(item.transportation)]]"></iron-icon>
+	    			<div class="method">[[item.transportation]]</div>
+	    		</div>
+	    	</div>
+	    </template>
+		
     </div>
     
   </template>
@@ -326,7 +342,13 @@
     	needRide: {
     		type: "Boolean",
     		value: false
-    	}
+    	},
+    	nearbyUserList:{
+    		type:Array,
+    		value:function(){
+    			return [];
+    		}
+    	},
     },
     
     attached:function(){
@@ -345,7 +367,12 @@
     
     nextPage2:function(event){
     	this.transportation = event.target.getAttribute('data-transportation')
-    	if (this.transportation == "driving" || this.transportation == "taxi") {
+    	if (this.transportation == "help") {
+    		this.$.page2.hidden = true;
+    		this.saveUser();
+    		this.getNearbyGuests();
+    		this.$.page5.classList.add("slideIn");
+    	} else if (this.transportation == "driving" || this.transportation == "taxi") {
         	this.$.page2.hidden = true;
         	this.$.page3.classList.add("slideIn");
     	} else {
@@ -357,9 +384,36 @@
     	this.goToEndPage(this.$.page3);
 
     },
+    getNearbyGuests() {
+    	var _this = this;
+    	$.ajax({
+    		type: "POST",
+    		data: {
+    			"cmd":"getNearbyUsers", 
+    			"eventId":"1",
+    			"email" : this.email
+    		},
+    		url: "/2NEWhere/UserController",
+    		complete: function(resp) {
+    			if(resp.responseText == "true"){
+    				var userData = JSON.parse(resp.responseText)
+    		    	var keys = Object.keys(userData);
+    		    	var userList = [];
+    		    	for(var i = 0; i < keys.length; i++){
+    		    		userList.push(userData[keys[i]]);
+    		    	}
+    		    	this.set("nearbyUserList", userList);
+    			}
+    		},
+    		dataType: "application/json"
+    	});    	
+    },
     goToEndPage:function(currentPage){
     	currentPage.hidden = true;
     	this.$.page4.classList.add("slideIn");
+		this.saveUser();
+    },
+    saveUser() {
     	var _this = this;
     	$.ajax({
     		type: "POST",
